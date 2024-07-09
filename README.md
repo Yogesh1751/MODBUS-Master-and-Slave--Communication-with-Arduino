@@ -29,7 +29,7 @@ Here are some key points about Modbus:
 
 Overall, Modbus is valued for its simplicity, reliability, and ease of implementation in various industrial and commercial automation systems.
 
-#####################################################################################################################################################################################################################
+###########################################################################################################
 
 1. **Master and Slave Communication using Two Arduinos**:
     In this setup, we designate one Arduino as the Master and the other as the Slave. The Slave Arduino continuously generates random data, and the Master Arduino accesses this data from the Slave.
