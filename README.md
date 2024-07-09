@@ -1,80 +1,39 @@
-README.txt
+***MODBUS-Communication***
 
-libmodbus is a library that provides a Serial Modbus implementation for Arduino.
+Modbus is a communication protocol developed by Modicon (now Schneider Electric) in 1979 for use with its programmable logic controllers (PLCs). It has become a de facto standard communication protocol in industrial automation and is used for connecting electronic devices.
 
-A primary goal was to enable industrial communication for the Arduino in order to link it to industrial devices such as HMIs, CNCs, PLCs, temperature regulators or speed drives.
+Here are some key points about Modbus:
 
-now you can use software serial with the update from Helium6072!
+1. **Communication Layers**: 
+   - **Modbus RTU (Remote Terminal Unit)**: Uses serial communication protocols like RS-232 or RS-485.
+   - **Modbus ASCII**: Another serial communication method that transmits data in ASCII format.
+   - **Modbus TCP/IP**: Uses TCP/IP over Ethernet, allowing for communication over larger distances and integration with modern networking infrastructure.
 
-LIBRARY CONTENTS
-=================================================================
-LICENSE.txt			GNU Licence file
-keywords.txt		Arduino IDE colouring syntax
+2. **Master-Slave Architecture**: Modbus operates on a master-slave (or client-server) model. A master device (such as a computer or PLC) can communicate with multiple slave devices (such as sensors, actuators, and other field devices).
 
-/documentation
-Library documentation generated with Doxygen.
+3. **Data Representation**:
+   - **Coils**: Single-bit values (used for binary outputs).
+   - **Discrete Inputs**: Single-bit values (used for binary inputs).
+   - **Holding Registers**: 16-bit values (used for storing variables).
+   - **Input Registers**: 16-bit values (used for inputs).
 
-/examples
-Sample sketches to implement miscellaneous settings:
+4. **Function Codes**: These are used to read and write data to the various registers and coils. Common function codes include:
+   - **Read Coils (0x01)**: Reads the status of coils.
+   - **Read Discrete Inputs (0x02)**: Reads the status of discrete inputs.
+   - **Read Holding Registers (0x03)**: Reads the contents of holding registers.
+   - **Read Input Registers (0x04)**: Reads the contents of input registers.
+   - **Write Single Coil (0x05)**: Writes a single output to a coil.
+   - **Write Single Register (0x06)**: Writes a single value to a holding register.
 
-/examples/advanced_slave	Modbus slave node, which links Arduino pins to the Modbus port.
-/examples/RS485_slave		Modbus slave adapted to the RS485 port
-/examples/simple_master		Modbus master node with a single query
-/examples/simple_slave		Modbus slave node with a link array
-/examples/software_serial_simple_master		Modbus master node that works via software serial
+5. **Applications**: Modbus is widely used in industrial environments for applications such as monitoring and controlling manufacturing processes, managing power distribution, and integrating different types of equipment in a networked system.
 
-INSTALLATION PROCEDURE
-=================================================================
-Refer to this documentation to Install this library:
+Overall, Modbus is valued for its simplicity, reliability, and ease of implementation in various industrial and commercial automation systems.
 
-http://arduino.cc/en/Guide/Libraries
+#####################################################################################################################################################################################################################
 
-Starting with version 1.0.5, you can install 3rd party libraries in the IDE.
+1. **Master and Slave Communication using Two Arduinos**:
+    In this setup, we designate one Arduino as the Master and the other as the Slave. The Slave Arduino continuously generates random data, and the Master Arduino accesses this data from the Slave.
 
-Do not unzip the downloaded library, leave it as is.
+2. **Master and Slave Communication Using Multiple Arduinos**
 
-In the Arduino IDE, navigate to Sketch > Import Library. At the top of the drop down list, select the option to "Add Library". 
-
-You will be prompted to select this zipped library. 
-
-Return to the Sketch > Import Library menu. You should now see the library at the bottom of the drop-down menu. It is ready to be used in your sketch. 
-
-The zip file will have been expanded in the libraries folder in your Arduino sketches directory.
-
-NB : the library will be available to use in sketches, but examples for the library will not be exposed in the File > Examples until after the IDE has restarted. 
-
-
-KNOWN ISSUES
-=================================================================
-It is not compatible with ARDUINO LEONARDO and not tested under ARDUINO DUE and newer boards.
-
-TODO List
-=================================================================
-Common to Master and Slave:
-
-1) Implement other Serial settings: parity, stop bits, ...
-
-2) End frame delay, also known as T35
-
-3) Test it with several Arduino boards: UNO, Mega, etc..
-
-4) Extend it to Leonardo
-
-Master:
-
-1) Function code 1 and 2 still not implemented
-
-2) Function code 15 still not implement
-
-3) Other codes under development
-
-New features by Helium6072 29 July 2016
-=================================================================
-1) "port->flush();" changed into "while(port->read() >= 0);"
-
-Since Serial.flush() (port->flush(); in ModbusRtu.h line 287, 337, & 827) no longer empties incoming buffer on 1.6 (Arduino.cc : flush() "Waits for the transmission of outgoing serial data to complete. Prior to Arduino 1.0, this instead removed any buffered incoming serial data.), use "while(port->read() >= 0);" instead.
-
-2) software serial compatible
-
-New constructor Modbus::Modbus(uint8_t u8id) and method void Modbus::begin(SoftwareSerial *sPort, long u32speed) that makes using software serial possible.
-Check out sexample "software_serial_simple_master" and learn more!
+    In this setup, we designate one Arduino as the Master and the others as Slaves. The Slave Arduinos continuously generate random data. The Master Arduino accesses this data sequentially from each of the Slave Arduinos.
