@@ -19,7 +19,6 @@
   5. Connect the DE (data enable) and RE’ (receiver enable) pins of the MAX485 module together and to a digital pin on the Arduino.
 
 
-And Connect the A&B pin of Both MAX485 Module to each Other
+And Connect the A&B pin of Both MAX485 Module to each Other.
 
-Reapeat for more Slave Devices.
 
