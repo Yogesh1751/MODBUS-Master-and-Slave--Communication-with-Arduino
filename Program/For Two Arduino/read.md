@@ -172,3 +172,142 @@
         
    ### Summary
         This code sets up a Modbus master device that communicates with a Modbus slave to read holding registers. It uses a state machine to control the sequence of operations: waiting, sending a query, and              checking for incoming messages. The received data is printed to the serial monitor for debugging purposes. The Modbus communication is handled by the `ModbusRtu` library, which facilitates communication          between the master and slave devices.
+
+
+
+### 3. Overview OF Both Master and Slave code
+
+The two code snippets work together to establish communication between a Modbus master and a Modbus slave using the Modbus RTU protocol. The master requests data from the slave, and the slave responds with the requested data.
+
+### Slave Code Explanation
+
+```cpp
+#include <ModbusRtu.h>
+
+#define ID 1
+
+Modbus slave(ID, Serial, 2); // Modbus object declaration for slave (Pin 2 for TX Enable)
+
+uint16_t au16data; // Analog value to be sent to the master
+
+void setup() {
+  Serial.begin(115200); // Start serial communication
+  Serial.println("Slave setup complete");
+
+  slave.start(); // Start Modbus communication
+}
+
+void loop() {
+  au16data = random(0, 1024);  // Assign random value between 0 and 1023
+
+  slave.poll(&au16data, 1); // Send analog value to master
+  
+  Serial.print("Sent Data to Master: ");
+  Serial.println(au16data);
+
+  delay(750); // Delay before sending again
+}
+```
+
+1. **Setup**:
+   - The slave is assigned an ID of 1.
+   - The serial communication is initialized at a baud rate of 115200.
+   - Modbus communication is started.
+
+2. **Loop**:
+   - A random analog value is generated and assigned to `au16data`.
+   - The `slave.poll(&au16data, 1);` function is called to handle Modbus communication and send the value to the master.
+   - The value sent to the master is printed to the serial monitor.
+   - A delay of 750 milliseconds is introduced before the next iteration.
+
+### Master Code Explanation
+
+```cpp
+#include <ModbusRtu.h>
+
+uint16_t au16data[2]; // Array to store received data
+uint8_t u8state; // State variable
+uint8_t u8query; // Query variable
+
+Modbus master(0, Serial, 2); // Modbus object declaration for master (Pin 2 for TX Enable)
+
+modbus_t telegram; // Modbus telegram structure
+
+unsigned long u32wait;
+
+void setup() {
+  telegram.u8id = 1; // Slave address
+  telegram.u8fct = 3; // Function code (read holding registers)
+  telegram.u16RegAdd = 0; // Start address in slave
+  telegram.u16CoilsNo = 2; // Number of elements (registers) to read
+  telegram.au16reg = au16data; // Pointer to data array
+
+  Serial.begin(115200); // Start serial communication
+  Serial.println("Master setup complete");
+
+  master.start(); // Start Modbus communication
+  master.setTimeOut(5000); // Set timeout
+  u32wait = millis() + 1700; // Initial wait time
+  u8state = u8query = 0; // Initialize state and query variables
+}
+
+void loop() {
+  switch(u8state) {
+    case 0: 
+      if (millis() > u32wait) u8state++; // Wait state
+      break;
+    case 1: 
+      master.query(telegram); // Send query
+      u8state++;
+      break;
+    case 2:
+      master.poll(); // Check incoming messages
+      if (master.getState() == COM_IDLE) {
+        u8state = 0; // Reset state
+        u32wait = millis() + 1700; // Set next wait time
+        
+        // Print the data received from the slave
+        Serial.print("Received Data: ");
+        for (int i = 0; i < 2; i++) {
+          Serial.print(au16data[i]);
+          Serial.print(" ");
+        }
+        Serial.println();
+      }
+      break;
+  }
+}
+```
+
+1. **Setup**:
+   - The Modbus telegram structure is set up with the slave ID (1), function code (3 for reading holding registers), start address (0), number of registers to read (2), and the pointer to the data array (`au16data`).
+   - Serial communication is initialized at a baud rate of 115200.Here you Can adjust the Baud Rate according to you.
+   - Modbus communication is started.
+   - A timeout of 5000 milliseconds is set for Modbus communication.
+   - Initial wait time and state variables are set.
+
+2. **Loop**:
+   - A state machine controls the sequence of operations:
+     - **State 0**: Waits until the current time exceeds the wait time, then transitions to the next state.
+     - **State 1**: Sends the Modbus query to the slave using `master.query(telegram);` and transitions to the next state.
+     - **State 2**: Polls for incoming messages using `master.poll();`. If the master is idle (`master.getState() == COM_IDLE`), it processes the received data:
+       - Resets the state to 0.
+       - Sets the next wait time.
+       - Prints the received data to the serial monitor.
+
+### How the Master Receives Data from the Slave
+
+1. **Query Transmission**:
+   - The master sends a query to the slave requesting to read holding registers (function code 3).
+   - The query includes the slave ID (1), the start address (0), and the number of registers to read (2).
+
+2. **Slave Response**:
+   - The slave, upon receiving the query, processes it and retrieves the requested data (in this case, a random value stored in `au16data`).
+   - The slave sends the data back to the master.
+
+3. **Data Reception and Processing**:
+   - The master, in its polling loop, checks for incoming messages.
+   - When the master detects that it is idle and has received data, it processes the data.
+   - The received data is stored in the `au16data` array and printed to the serial monitor.
+
+This setup enables continuous communication between the master and the slave, with the master periodically requesting data and the slave responding with the requested values.
