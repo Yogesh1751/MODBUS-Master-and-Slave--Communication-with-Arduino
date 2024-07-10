@@ -1,6 +1,6 @@
 #include <ModbusRtu.h>
 
-#define ID   1
+#define ID   2
 
 Modbus slave(ID, Serial, 2); // Modbus object declaration for slave (Pin 2 for TX Enable)
 
