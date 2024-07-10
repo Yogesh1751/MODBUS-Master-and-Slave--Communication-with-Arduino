@@ -175,7 +175,7 @@
 
 
 
-### 3. Overview OF Both Master and Slave code
+#  3. Overview OF Both Master and Slave code
 
 The two code snippets work together to establish communication between a Modbus master and a Modbus slave using the Modbus RTU protocol. The master requests data from the slave, and the slave responds with the requested data.
 
