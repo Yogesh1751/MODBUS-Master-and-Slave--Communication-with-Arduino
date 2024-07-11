@@ -1,6 +1,6 @@
 #include <ModbusRtu.h>
 
-uint16_t au16data[2]; // Array to store received data
+uint16_t au16data[1]; // Array to store received data
 uint8_t u8state; // State variable
 uint8_t u8query; // Query variable
 
@@ -14,10 +14,10 @@ void setup() {
   telegram.u8id = 1; // Slave address
   telegram.u8fct = 3; // Function code (read holding registers)
   telegram.u16RegAdd = 0; // Start address in slave
-  telegram.u16CoilsNo = 2; // Number of elements (registers) to read
+  telegram.u16CoilsNo = 1; // Number of elements (registers) to read
   telegram.au16reg = au16data; // Pointer to data array
 
-  Serial.begin(115200); // Start serial communication
+  Serial.begin(19200); // Start serial communication
   Serial.println("Master setup complete");
 
   master.start(); // Start Modbus communication
