@@ -7,7 +7,7 @@ Modbus slave(ID, Serial, 2); // Modbus object declaration for slave (Pin 2 for T
 uint16_t au16data; // Analog value to be sent to the master
 
 void setup() {
-  Serial.begin(115200); // Start serial communication
+  Serial.begin(19200); // Start serial communication
   Serial.println("Slave setup complete");
 
   slave.start(); // Start Modbus communication
